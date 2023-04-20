@@ -94,7 +94,8 @@ function createCurrent(data) {
 
 		///// current weather header
 		let currentHeader = `
-		<p class="current-header">Results for: ${data.name}, ${data.sys.country}</p>
+		<p class="current-header">Results for: <strong>${data.name}, ${data.sys.country}</strong></p>
+		<img class="star" src="img/star.svg" />
 		`;
 		currentEl.insertAdjacentHTML("beforeend", currentHeader);
 
@@ -131,7 +132,7 @@ function displayMatches(e) {
 			function (data) {
 				createCurrent(data);
 				createForecast(data);
-				currentEl.classList.add("show");
+				currentEl.classList.add("show-grid");
 				forecastEl.classList.add("show");
 			}
 		);
