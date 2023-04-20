@@ -4,6 +4,7 @@ const searchInput = document.querySelector("#search");
 const currentEl = document.querySelector(".current");
 const outputDiv = document.querySelector(".output-div");
 const forecastEl = document.querySelector(".forecast-container");
+const forecastOuter = document.querySelector(".forecast-outer");
 console.log(forecastEl);
 
 function createForecast(data) {
@@ -29,6 +30,17 @@ function createForecast(data) {
 			if (filteredByDate.length > 0) {
 				forecastEl.innerHTML = "";
 
+				// create header and append
+				let htmlHeader = `
+				<div class="forecast">
+					<div class="flex justify-between items-center">
+						<p class="forecast-header">5-Day Forecast: </p>
+					</div>
+				</div>
+			`;
+				forecastEl.insertAdjacentHTML("beforeend", htmlHeader);
+
+				forecastEl.insertAdjacentHTML;
 				// loop through array of forecasts and create DOM elements
 				filteredByDate.forEach((el) => {
 					const dtg = el.dt_txt.split(" ")[0];
@@ -46,11 +58,11 @@ function createForecast(data) {
 					} else {
 						cloudIcon = "img/cloud.svg";
 					}
-					console.log(dtg);
-					console.log(rain);
-					console.log(clouds);
-					console.log(low);
-					console.log(high);
+					// console.log(dtg);
+					// console.log(rain);
+					// console.log(clouds);
+					// console.log(low);
+					// console.log(high);
 
 					const html = `
 				        <div class="forecast">
@@ -74,37 +86,37 @@ function setCurrentWeatherIcon(code) {}
 function createCurrent(data) {
 	{
 		console.log(data);
+		const humid = data.main.humidity;
+		const wind = Math.trunc(data.wind.speed);
+		const feels = Math.trunc(data.main.feels_like);
+
 		currentEl.innerHTML = "";
+
+		///// current weather header
+		let currentHeader = `
+		<p class="current-header">Results for: ${data.name}, ${data.sys.country}</p>
+		`;
+		currentEl.insertAdjacentHTML("beforeend", currentHeader);
+
+		//////// current weather info
 		const temp = Math.trunc(data.main.temp);
+		// <p class="place-name">${data.name}</p>
 		const html = `
-							<div>
 								<img
 									src="img/lg/sun-lg.svg"
 									alt="weather icon"
 									class="main-icon"
-									
-									
 								/>
-							</div>
-              <div class="temp-box">
                 <p class="temp">${temp}°F</p>
-                <p class="place-name">${data.name}</p>
-              </div>
-            </div>
+								<div class="current-info">
+								<p>Humidity: ${humid}%</p>
+								<p>Wind: ${wind}mph</p>
+								<p>Feels Like: ${feels}°F</p>
+								</div>
       `;
-		currentEl.innerHTML = html;
+		currentEl.insertAdjacentHTML("beforeend", html);
 	}
 }
-function showResults() {
-	let runOnce = false;
-	if (!runOnce) {
-		currentEl.classList.add("show");
-		forecastEl.classList.add("show");
-
-		runOnce = true;
-	}
-}
-
 function displayMatches(e) {
 	e.preventDefault();
 	const val = searchInput.value;
