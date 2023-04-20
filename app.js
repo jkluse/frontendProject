@@ -33,9 +33,19 @@ function createForecast(data) {
 				filteredByDate.forEach((el) => {
 					const dtg = el.dt_txt.split(" ")[0];
 					const rain = `${Math.trunc(el.pop * 100)}%`;
-					const clouds = `${el.clouds.all}%`;
+					const clouds = `${el.clouds.all}`;
 					const low = Math.trunc(el.main.temp_min);
 					const high = Math.trunc(el.main.temp_max);
+					let cloudIcon;
+
+					// cloud icon logic
+					if (clouds < 25) {
+						cloudIcon = "img/sun.svg";
+					} else if (clouds < 50) {
+						cloudIcon = "img/cloud-sun.svg";
+					} else {
+						cloudIcon = "img/cloud.svg";
+					}
 					console.log(dtg);
 					console.log(rain);
 					console.log(clouds);
@@ -46,8 +56,8 @@ function createForecast(data) {
 				        <div class="forecast">
 				          <div class="flex justify-between items-center">
 				            <p class="forecast-date">${dtg}</p>
-				            <p class="rain-percent">${rain}</p>
-				            <img class="forecast-icon" src="img/cloud.svg" />
+				            <p class="rain-percent">${rain}<img src="img/drop.svg"></p>
+				            <img class="forecast-icon" src="${cloudIcon}" />
 				            <p class="low-high">${low}° / ${high}°</p>
 				          </div>
 				        </div>
@@ -59,33 +69,46 @@ function createForecast(data) {
 	);
 }
 
+function setCurrentWeatherIcon(code) {}
+
 function createCurrent(data) {
 	{
-		// console.log(data);
+		console.log(data);
 		currentEl.innerHTML = "";
 		const temp = Math.trunc(data.main.temp);
 		const html = `
+							<div>
+								<img
+									src="img/lg/sun-lg.svg"
+									alt="weather icon"
+									class="main-icon"
+									
+									
+								/>
+							</div>
               <div class="temp-box">
                 <p class="temp">${temp}°F</p>
                 <p class="place-name">${data.name}</p>
-              </div>
-              <div>
-                <img
-                  src="img/cloud.svg"
-                  alt="weather icon"
-                  class="main-icon"
-                  width="50px"
-                />
               </div>
             </div>
       `;
 		currentEl.innerHTML = html;
 	}
 }
+function showResults() {
+	let runOnce = false;
+	if (!runOnce) {
+		currentEl.classList.add("show");
+		forecastEl.classList.add("show");
+
+		runOnce = true;
+	}
+}
 
 function displayMatches(e) {
 	e.preventDefault();
 	const val = searchInput.value;
+	searchInput.value = "";
 
 	$.get(`https://geocode.maps.co/search?q=${val}`, function (data) {
 		// console.log(data);
@@ -96,6 +119,8 @@ function displayMatches(e) {
 			function (data) {
 				createCurrent(data);
 				createForecast(data);
+				currentEl.classList.add("show");
+				forecastEl.classList.add("show");
 			}
 		);
 	});
