@@ -85,7 +85,7 @@ function setCurrentWeatherIcon(code) {}
 
 function createCurrent(data) {
 	{
-		console.log(data);
+		console.log(data.name);
 		const humid = data.main.humidity;
 		const wind = Math.trunc(data.wind.speed);
 		const feels = Math.trunc(data.main.feels_like);
@@ -94,14 +94,15 @@ function createCurrent(data) {
 
 		///// current weather header
 		let currentHeader = `
-		<p class="current-header">Results for: <strong>${data.name}, ${data.sys.country}</strong></p>
-		<img class="star" src="img/star.svg" />
+		<p class="current-header">Results for: <strong>${data.name}</strong></p>
+		<img class="star" src="${
+			favArr.includes(data.name) ? "img/star-fill-blue.svg" : "img/star.svg"
+		}" />
 		`;
 		currentEl.insertAdjacentHTML("beforeend", currentHeader);
 
 		//////// current weather info
 		const temp = Math.trunc(data.main.temp);
-		// <p class="place-name">${data.name}</p>
 		const html = `
 								<img
 									src="img/lg/sun-lg.svg"
@@ -116,6 +117,10 @@ function createCurrent(data) {
 								</div>
       `;
 		currentEl.insertAdjacentHTML("beforeend", html);
+
+		//event listeners for favorite list
+		const starEl = document.querySelector(".star");
+		starEl.addEventListener("click", addRemoveFavorite);
 	}
 }
 function displayMatches(e) {
@@ -140,3 +145,54 @@ function displayMatches(e) {
 }
 
 btn.addEventListener("click", displayMatches);
+
+// FAVORITES FUNCTIONALITY
+
+const favList = document.querySelector(".fav-list");
+const dropdownEl = document.querySelector(".dropdown");
+const listItemEl = document.querySelector("#list-items");
+
+favList.addEventListener("click", handleDropDown);
+
+function handleDropDown() {
+	if (favArr.length < 1) {
+		alert("No favorites...yet! :)");
+		return;
+	}
+	dropdownEl.classList.toggle("show");
+}
+
+// Storage for Favorite lists
+const favArr = [];
+
+function addRemoveFavorite(e) {
+	const location = document.querySelector(".current-header strong").textContent;
+
+	if ($(this).attr("src") === "img/star.svg") {
+		// Push to favorites arr
+		favArr.push(location);
+		$(this).attr("src", "img/star-fill-blue.svg");
+
+		// Add element to drop down
+		const html = `<a class="addedFav" href="#">${location}</a>`;
+		listItemEl.insertAdjacentHTML("beforeend", html);
+	} else {
+		// Remove from favorites arr
+		favArr.splice(favArr.indexOf(location), 1);
+		$(this).attr("src", "img/star.svg");
+		console.log(Array.from(listItemEl.children));
+		Array.from(listItemEl.children).forEach((el) => {
+			console.log(el.textContent);
+			if (el.textContent === location) {
+				console.log(el);
+				el.remove();
+			}
+		});
+	}
+	console.log("Fav arr", favArr);
+}
+/*
+<a href="#"> About Us </a>
+<a href="#"> Contact Us</a>
+<a href="#"> career </a>
+*/
