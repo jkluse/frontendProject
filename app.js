@@ -5,7 +5,6 @@ const currentEl = document.querySelector(".current");
 const outputDiv = document.querySelector(".output-div");
 const forecastEl = document.querySelector(".forecast-container");
 const forecastOuter = document.querySelector(".forecast-outer");
-console.log(forecastEl);
 
 function createForecast(data) {
 	const { lat, lon } = data.coord;
@@ -13,19 +12,13 @@ function createForecast(data) {
 	$.get(
 		`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=6e4f8f4955f9d245433db19f65e18153&units=imperial`,
 		function (data) {
-			console.log(data);
 			let today = new Date();
 			let addDays = 1;
 			today.setDate(today.getDate() + addDays);
 
-			// creates date string in YYYY-MM-DD
-			// let dateString = today.toISOString().split("T")[0];
-			// console.log(dateString + "  12:00:00");
-
 			const filteredByDate = data.list.filter((el) => {
 				return el.dt_txt.includes(" 12:00:00");
 			});
-			console.log(filteredByDate);
 
 			if (filteredByDate.length > 0) {
 				forecastEl.innerHTML = "";
@@ -41,7 +34,8 @@ function createForecast(data) {
 				forecastEl.insertAdjacentHTML("beforeend", htmlHeader);
 
 				forecastEl.insertAdjacentHTML;
-				// loop through array of forecasts and create DOM elements
+
+				// create DOM elements
 				filteredByDate.forEach((el) => {
 					const dtg = el.dt_txt.split(" ")[0];
 					const rain = `${Math.trunc(el.pop * 100)}%`;
@@ -58,11 +52,6 @@ function createForecast(data) {
 					} else {
 						cloudIcon = "img/cloud.svg";
 					}
-					// console.log(dtg);
-					// console.log(rain);
-					// console.log(clouds);
-					// console.log(low);
-					// console.log(high);
 
 					const html = `
 				        <div class="forecast">
@@ -81,18 +70,16 @@ function createForecast(data) {
 	);
 }
 
-function setCurrentWeatherIcon(code) {}
-
 function createCurrent(data) {
 	{
-		console.log(data.name);
+		console.log(data);
 		const humid = data.main.humidity;
 		const wind = Math.trunc(data.wind.speed);
 		const feels = Math.trunc(data.main.feels_like);
 
 		currentEl.innerHTML = "";
 
-		///// current weather header
+		// current weather header
 		let currentHeader = `
 		<p class="current-header">Results for: <strong>${data.name}</strong></p>
 		<img class="star" src="${
@@ -101,11 +88,26 @@ function createCurrent(data) {
 		`;
 		currentEl.insertAdjacentHTML("beforeend", currentHeader);
 
-		//////// current weather info
+		// Determine main weather icon
+		let mainIcon = "img/lg/sun-lg.svg";
+		const dataCode = data.weather[0].id;
+		if (dataCode >= 801 && dataCode <= 804) {
+			mainIcon = "img/lg/cloud-sun-fill.svg";
+		} else if (dataCode >= 200 && dataCode < 299) {
+			mainIcon = "img/lg/lightning-fill.svg";
+		} else if (dataCode >= 300 && dataCode <= 550) {
+			mainIcon = "img/lg/cloud-rain-fill.svg";
+		} else if (dataCode >= 600 && dataCode <= 650) {
+			mainIcon = "img/lg/snowflake-fill.svg";
+		} else if (dataCode >= 701 && dataCode <= 799) {
+			mainIcon = "img/lg/warning-fill.svg";
+		}
+
+		// current weather info
 		const temp = Math.trunc(data.main.temp);
 		const html = `
 								<img
-									src="img/lg/sun-lg.svg"
+									src="${mainIcon}"
 									alt="weather icon"
 									class="main-icon"
 								/>
@@ -123,6 +125,9 @@ function createCurrent(data) {
 		starEl.addEventListener("click", addRemoveFavorite);
 	}
 }
+
+///// SEARCH FUNCTIONALITY
+
 function displayMatches(e) {
 	e.preventDefault();
 	const val = searchInput.value;
@@ -165,6 +170,7 @@ function handleDropDown() {
 // Storage for Favorite lists
 const favArr = [];
 
+//  Removes Element from Favorite List
 function addRemoveFavorite(e) {
 	const location = document.querySelector(".current-header strong").textContent;
 
@@ -182,17 +188,10 @@ function addRemoveFavorite(e) {
 		$(this).attr("src", "img/star.svg");
 		console.log(Array.from(listItemEl.children));
 		Array.from(listItemEl.children).forEach((el) => {
-			console.log(el.textContent);
 			if (el.textContent === location) {
-				console.log(el);
 				el.remove();
 			}
 		});
 	}
 	console.log("Fav arr", favArr);
 }
-/*
-<a href="#"> About Us </a>
-<a href="#"> Contact Us</a>
-<a href="#"> career </a>
-*/
